@@ -1,0 +1,12 @@
+# Normalize line endings to LF in the repo (cross-platform)
+* text=auto eol=lf
+
+# Explicitly exclude binary files from line-ending conversion
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
