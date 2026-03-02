@@ -61,6 +61,9 @@ export const login = async (req, res) => {
       console.error("Login failed: JWT_SECRET is not set");
       return res.status(503).json({ message: "Server configuration error. Please try again later." });
     }
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
 
     const user = await User.findOne({ email });
 
@@ -82,7 +85,7 @@ export const login = async (req, res) => {
       profilePic: user.profilePic,
     });
   } catch (error) {
-    console.error("Error in login controller:", error.message);
+    console.error("Error in login controller:", error.message, error.stack);
     res.status(500).json({
       message: "Internal server error",
       ...(process.env.NODE_ENV === "development" && { error: error.message }),
