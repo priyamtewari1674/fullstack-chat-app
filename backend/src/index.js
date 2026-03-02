@@ -18,13 +18,27 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin:
+      process.env.FRONTEND_URL ||
+      process.env.CORS_ORIGIN ||
+      "http://localhost:5173",
     credentials: true,
   }),
 );
 
 const PORT = process.env.PORT || 5001;
 console.log(PORT);
+
+if (!process.env.JWT_SECRET) {
+  console.error(
+    "FATAL: JWT_SECRET environment variable is not set. Login/signup will fail.",
+  );
+}
+if (!process.env.MONGODB_URI) {
+  console.error(
+    "FATAL: MONGODB_URI environment variable is not set. Database will not connect.",
+  );
+}
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);

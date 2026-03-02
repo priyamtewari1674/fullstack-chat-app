@@ -6,6 +6,10 @@ import { generateToken } from "../lib/utils.js";
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
   try {
+    if (!process.env.JWT_SECRET) {
+      console.error("Signup failed: JWT_SECRET is not set");
+      return res.status(503).json({ message: "Server configuration error. Please try again later." });
+    }
     if (!fullName || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -53,6 +57,11 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
+    if (!process.env.JWT_SECRET) {
+      console.error("Login failed: JWT_SECRET is not set");
+      return res.status(503).json({ message: "Server configuration error. Please try again later." });
+    }
+
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -73,8 +82,11 @@ export const login = async (req, res) => {
       profilePic: user.profilePic,
     });
   } catch (error) {
-    console.log("Error in login controller", error.message);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error in login controller:", error.message);
+    res.status(500).json({
+      message: "Internal server error",
+      ...(process.env.NODE_ENV === "development" && { error: error.message }),
+    });
   }
 };
 export const logout = (req, res) => {
