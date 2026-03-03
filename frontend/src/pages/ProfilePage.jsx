@@ -1,11 +1,25 @@
 import React from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Camera, Mail, User } from "lucide-react";
+import toast from "react-hot-toast";
 
 const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
 
-  const handleImageUpload = async (e) => {};
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      await updateProfile({ profilePic: reader.result });
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
 
   return (
     <div className="h-screen pt-20">
@@ -49,7 +63,7 @@ const ProfilePage = () => {
             <p className="text-sm text-zinc-400">
               {isUpdatingProfile
                 ? "Uploading..."
-                : "CLick the camera icon to update the photo"}
+                : "Click the camera icon to update the photo"}
             </p>
           </div>
 
